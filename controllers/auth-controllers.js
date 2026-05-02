@@ -7,13 +7,14 @@ const {
 const {
   generateTokenAndSetCookie,
 } = require("../utils/generateTokenAndSetCookie.js");
-const {
-  sendVerificationEmail,
-  sendWelcomeEmail,
-  sendResetPasswordEmail,
-  sendResetSuccessEmail,
-} = require("../utils/email.service.js");
+const { sendEmail } = require("../utils/email.service.js");
 const { formatResponse } = require("../utils/common.js");
+const {
+  WELCOME_EMAIL_TEMPLATE,
+  VERIFY_EMAIL_TEMPLATE,
+  RESET_PASSWORD_TEMPLATE,
+  RESET_SUCCESSFUL_TEMPLATE,
+} = require("../utils/emailTemplates.js");
 
 const signup = async (req, res) => {
   try {
@@ -52,7 +53,11 @@ const signup = async (req, res) => {
     generateTokenAndSetCookie(res, user._id);
 
     try {
-      await sendVerificationEmail(user);
+      const html = VERIFY_EMAIL_TEMPLATE.replace(
+        "{{username}}",
+        user.name,
+      ).replace("{{verificationToken}}", user.verificationToken);
+      await sendEmail(user.email, "Email verification - Touropia", html);
     } catch (error) {
       return res
         .status(500)
@@ -111,7 +116,8 @@ const verifyEmail = async (req, res) => {
 
     await user.save();
 
-    await sendWelcomeEmail(user.email, user.name);
+    const html = WELCOME_EMAIL_TEMPLATE.replace("{{username}}", user.name);
+    await sendEmail(user.email, "Welcome to Tour Ethiopia", html);
 
     res
       .status(200)
@@ -201,11 +207,15 @@ const forgotPassword = async (req, res) => {
     await user.save();
 
     // send reset password email
-    sendResetPasswordEmail(
-      user.email,
+    const html = RESET_PASSWORD_TEMPLATE.replace(
+      "{{username}}",
       user.name,
+    ).replaceAll(
+      "{{resetLink}}",
       `${process.env.CLIENT_URL}/reset-password/${resetToken}`,
     );
+
+    sendEmail(user.email, "Reset Your Password - Touropia", html);
 
     res.status(200).json({
       success: true,
@@ -245,7 +255,11 @@ const resetPassword = async (req, res) => {
     user.resetPasswordExpiresAt = undefined;
     await user.save();
 
-    await sendResetSuccessEmail(user.email, user.name);
+    const html = RESET_SUCCESSFUL_TEMPLATE.replace(
+      "{{username}}",
+      user.name,
+    ).replaceAll("{{loginLink}}", `${process.env.CLIENT_URL}/login`);
+    await sendEmail(user.email, "Password Reset Successful - Touropia", html);
 
     res
       .status(200)
@@ -278,7 +292,11 @@ const resendVerification = async (req, res) => {
       });
     }
 
-    await sendVerificationEmail(user);
+    const html = VERIFY_EMAIL_TEMPLATE.replace(
+      "{{username}}",
+      user.name,
+    ).replace("{{verificationToken}}", user.verificationToken);
+    await sendEmail(user.email, "Email verification - Touropia", html);
 
     res.status(200).json({
       success: true,
