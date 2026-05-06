@@ -16,7 +16,8 @@ const regionRoutes=require("./routes/regionRoutes.js");
 const createTourRoutes=require("./routes/createTourRoutes.js");
 const listTourRoutes=require("./routes/listToursRoutes.js");
 const getTourRoutes=require("./routes/getTourRoutes.js")
-const updateDeleteTour=require("./routes/updateDeleteTourRoutes.js")
+const updateDeleteTour=require("./routes/updateDeleteTourRoutes.js");
+const approveRejectTours=require("./routes/approveRejectTourRoutes.js")
 
 const app = express();
 
@@ -59,8 +60,9 @@ app.use("/api/user", userRoutes);
 app.use("/api/region",regionRoutes);
 app.use("/api/tours",createTourRoutes);
 app.use("/api/tours",listTourRoutes);
-app.use("/api.tours",getTourRoutes)
-app.use("/api/tours",updateDeleteTour)
+app.use("/api.tours",getTourRoutes);
+app.use("/api/tours",updateDeleteTour);
+app.use("/api/admin/tours",approveRejectTours)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
