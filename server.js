@@ -12,6 +12,7 @@ const connectDB = require("./db/connectDB");
 const authRoutes = require("./routes/auth.routes.js");
 const adminRoutes = require("./routes/admin.routes.js");
 const userRoutes = require("./routes/user.routes.js");
+const regionRoutes=require("./routes/regionRoutes.js")
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.get("/api-docs.json", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/region",regionRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
