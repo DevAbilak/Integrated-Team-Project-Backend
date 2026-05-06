@@ -12,8 +12,9 @@ const connectDB = require("./db/connectDB");
 const authRoutes = require("./routes/auth.routes.js");
 const adminRoutes = require("./routes/admin.routes.js");
 const userRoutes = require("./routes/user.routes.js");
-const regionRoutes=require("./routes/regionRoutes.js")
-const createTourRoutes=require("./routes/createTourRoutes.js")
+const regionRoutes=require("./routes/regionRoutes.js");
+const createTourRoutes=require("./routes/createTourRoutes.js");
+const listTourRoutes=require("./routes/listToursRoutes.js")
 
 const app = express();
 
@@ -53,8 +54,9 @@ app.get("/api-docs.json", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/region",regionRoutes)
-app.use("/api/tours",createTourRoutes)
+app.use("/api/region",regionRoutes);
+app.use("/api/tours",createTourRoutes);
+app.use("/api/tours",listTourRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
