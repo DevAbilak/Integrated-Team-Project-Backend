@@ -7,6 +7,10 @@ const referralSchema = new mongoose.Schema({
     required: true,
   },
   referredEmail: { type: String, required: true, lowercase: true, trim: true },
+  referredUserId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   status: {
     type: String,
     enum: ["pending", "completed"],

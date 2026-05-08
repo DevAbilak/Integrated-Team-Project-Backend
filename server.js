@@ -12,6 +12,11 @@ const connectDB = require("./db/connectDB");
 const authRoutes = require("./routes/auth.routes.js");
 const adminRoutes = require("./routes/admin.routes.js");
 const userRoutes = require("./routes/user.routes.js");
+const paymentsRoutes = require("./routes/payments.routes.js");
+const loyaltyRoutes = require("./routes/loyalty.routes.js");
+const referralsRoutes = require("./routes/referrals.routes.js");
+const internalRoutes = require("./routes/internal.routes.js");
+const { handleStripeWebhook } = require("./controllers/payments.controller.js");
 
 const app = express();
 
@@ -34,6 +39,13 @@ app.use(
   }),
 );
 
+// Stripe webhooks require the raw body for signature verification
+app.post(
+  "/api/payments/webhook/stripe",
+  express.raw({ type: "application/json" }),
+  handleStripeWebhook,
+);
+
 app.use(express.json()); // allow us to parse incoming requests: req.body
 app.use(cookieParser()); // allows us to parse incoming cookies
 
@@ -51,6 +63,10 @@ app.get("/api-docs.json", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/payments", paymentsRoutes);
+app.use("/api/loyalty", loyaltyRoutes);
+app.use("/api/referrals", referralsRoutes);
+app.use("/internal", internalRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

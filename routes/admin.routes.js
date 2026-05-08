@@ -3,6 +3,10 @@ const {
   getAllUsers,
   verifyOperator,
 } = require("../controllers/admin-controllers");
+const {
+  getAdminSettings,
+  putAdminSettings,
+} = require("../controllers/admin-settings.controller.js");
 const { verifyToken } = require("../middleware/verifyToken");
 const { isAdmin } = require("../middleware/isAdmin");
 
@@ -116,5 +120,8 @@ const router = express.Router();
 
 router.get("/users", verifyToken, isAdmin, getAllUsers);
 router.put("/users/:id/verify-operator", verifyToken, isAdmin, verifyOperator);
+
+router.get("/settings", verifyToken, isAdmin, getAdminSettings);
+router.put("/settings", verifyToken, isAdmin, putAdminSettings);
 
 module.exports = router;

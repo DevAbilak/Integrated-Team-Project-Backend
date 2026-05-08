@@ -14,6 +14,9 @@ const bookingSchema = new mongoose.Schema({
   travelDate: { type: Date, required: true },
   numTravelers: { type: Number, required: true, min: 1 },
   totalPrice: { type: Number, required: true, min: 0 },
+  currency: { type: String, default: "ETB", trim: true, uppercase: true },
+  loyaltyPointsRedeemed: { type: Number, default: 0, min: 0 },
+  loyaltyDiscountApplied: { type: Number, default: 0, min: 0 },
   status: {
     type: String,
     enum: ["pending_payment", "confirmed", "cancelled", "completed"],

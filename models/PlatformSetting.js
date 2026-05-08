@@ -15,7 +15,7 @@ const platformSettingSchema = new mongoose.Schema(
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
     updatedAt: { type: Date, default: Date.now },
   },
@@ -39,7 +39,6 @@ platformSettingSchema.statics.getSingleton = async function () {
         referralEnabled: true,
         dangerAlertsEnabled: true,
       },
-      updatedBy: null, // will be set later
     });
   }
   return doc;

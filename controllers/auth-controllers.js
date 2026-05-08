@@ -15,6 +15,7 @@ const {
   RESET_PASSWORD_TEMPLATE,
   RESET_SUCCESSFUL_TEMPLATE,
 } = require("../utils/emailTemplates.js");
+const { validateReferral } = require("../services/referrals.service.js");
 
 const signup = async (req, res) => {
   try {
@@ -47,7 +48,19 @@ const signup = async (req, res) => {
       verificationExpiresAt: Date.now() + 24 * 60 * 60 * 1000, //24 hours
       role,
     });
-    user.save();
+    await user.save();
+
+    if (req.body.referralCode) {
+      try {
+        await validateReferral({
+          newUserId: user._id,
+          email: user.email,
+          referralCode: req.body.referralCode,
+        });
+      } catch (refErr) {
+        console.warn("[referral] validate on signup:", refErr.message);
+      }
+    }
 
     // jwt
     generateTokenAndSetCookie(res, user._id);
