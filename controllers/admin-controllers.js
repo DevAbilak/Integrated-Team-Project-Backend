@@ -1,3 +1,4 @@
+const AdminLog = require("../models/AdminLog.js");
 const User = require("../models/User-model.js");
 const { formatResponse } = require("../utils/common.js");
 
@@ -73,40 +74,56 @@ const verifyOperator = async (req, res) => {
   }
 };
 
-const promoteUserToAdmin = async (req,res) => {
+const promoteUserToAdmin = async (req, res) => {
   try {
-    const {userId} = req.body;
+    const { userId } = req.body;
     const adminId = req.userId;
 
-    if(!userId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "user id to be promoted is required" });
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "user id to be promoted is required",
+      });
     }
 
-    const userToBePromoted = await User.findById(userId)
-    const adminPerformingPromotion = await User.findById(adminId)
+    const userToBePromoted = await User.findById(userId);
+    const adminPerformingPromotion = await User.findById(adminId);
 
     if (!userToBePromoted) {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
-    } 
-
-    if (userToBePromoted.role === 'admin') {
-      return res.status(400).json({ success: false, message: "User is already an admin" });
     }
-      
-    userToBePromoted.role = "admin"
-    await userToBePromoted.save()
+
+    if (userToBePromoted.role === "admin") {
+      return res
+        .status(400)
+        .json({ success: false, message: "User is already an admin" });
+    }
+
+    userToBePromoted.role = "admin";
+    await userToBePromoted.save();
+
+    const getClientIp = (req) => {
+      return (
+        req.headers["x-forwarded-for"]?.split(",")[0] || req.ip || "0.0.0.0"
+      );
+    };
+
+    const adminLog = await AdminLog.create({
+      adminId: requester._id, // the admin who performed the action
+      action: "promote_to_admin", // consistent action name
+      targetType: "user", // because we're acting on a user
+      targetId: userToBePromoted._id, // the user who got promoted
+      details: `Promoted user ${userToBePromoted.email} (${userToBePromoted._id}) to admin`,
+      ipAddress: getClientIp(req),
+    });
 
     res.status(200).json({
-      success: true, 
-      message: `User promoted to admin successfully by ${adminPerformingPromotion.name}`, 
-      user: formatResponse(userToBePromoted)
-    })
-
-
+      success: true,
+      message: `User promoted to admin successfully by ${adminPerformingPromotion.name}`,
+      user: formatResponse(userToBePromoted),
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Something went wrong" });
