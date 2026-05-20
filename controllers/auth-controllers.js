@@ -71,8 +71,8 @@ const signup = async (req, res) => {
       operatorDetails:
         role === "operator"
           ? {
-              businessName: businessNameRes,
-              licenseNumber: licenseNumberRes,
+              businessName: businessNameRes || "",
+              licenseNumber: licenseNumberRes || "",
               verified: false, // not verified until admin checks certificate
               certificateId: null, // will be set after upload
               certificateUrl: null,
