@@ -12,7 +12,6 @@ const connectDB = require("./db/connectDB");
 const authRoutes = require("./routes/auth.routes.js");
 const adminRoutes = require("./routes/admin.routes.js");
 const userRoutes = require("./routes/user.routes.js");
-<<<<<<< HEAD
 const cartRoutes = require("./routes/cartRoutes.js");
 const bookingRoutes = require("./routes/bookingRoutes");
 const regionRoutes=require("./routes/regionRoutes.js");
@@ -21,13 +20,12 @@ const listTourRoutes=require("./routes/listToursRoutes.js");
 const getTourRoutes=require("./routes/getTourRoutes.js")
 const updateDeleteTour=require("./routes/updateDeleteTourRoutes.js");
 const approveRejectTours=require("./routes/approveRejectTourRoutes.js")
-=======
 const paymentsRoutes = require("./routes/payments.routes.js");
 const loyaltyRoutes = require("./routes/loyalty.routes.js");
 const referralsRoutes = require("./routes/referrals.routes.js");
 const internalRoutes = require("./routes/internal.routes.js");
+const hotelRoutes = require("./routes/hotel.routes.js");
 const { handleStripeWebhook } = require("./controllers/payments.controller.js");
->>>>>>> abdu
 
 const app = express();
 
@@ -74,7 +72,6 @@ app.get("/api-docs.json", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
-<<<<<<< HEAD
 app.use("/api/cart", cartRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/region",regionRoutes);
@@ -83,12 +80,11 @@ app.use("/api/tours",listTourRoutes);
 app.use("/api.tours",getTourRoutes);
 app.use("/api/tours",updateDeleteTour);
 app.use("/api/admin/tours",approveRejectTours)
-=======
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/loyalty", loyaltyRoutes);
 app.use("/api/referrals", referralsRoutes);
 app.use("/internal", internalRoutes);
->>>>>>> abdu
+app.use("/api/hotels", hotelRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

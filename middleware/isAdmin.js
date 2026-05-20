@@ -15,4 +15,19 @@ const isAdmin = async (req, res, next) => {
   next();
 };
 
-module.exports = { isAdmin };
+const isOperator = async (req, res, next) => {
+  if (!req.userId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Can't find user in request" });
+  }
+  const user = await User.findById(req.userId);
+  if (user.role !== "operator") {
+    return res
+      .status(403)
+      .json({ success: false, message: "Access denied. Operator only." });
+  }
+  next();
+};
+
+module.exports = { isAdmin, isOperator };

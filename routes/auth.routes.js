@@ -11,7 +11,7 @@ const {
 } = require("../controllers/auth-controllers");
 
 const { verifyToken } = require("../middleware/verifyToken.js");
-const upload = require("../middleware/upload.js");
+const { upload } = require("../middleware/upload.js");
 
 const route = express.Router();
 
