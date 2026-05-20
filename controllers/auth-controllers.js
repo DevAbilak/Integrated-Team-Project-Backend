@@ -15,7 +15,11 @@ const {
   RESET_PASSWORD_TEMPLATE,
   RESET_SUCCESSFUL_TEMPLATE,
 } = require("../utils/emailTemplates.js");
+<<<<<<< HEAD
 const { uploadMedia } = require("../utils/media.service.js");
+=======
+const { validateReferral } = require("../services/referrals.service.js");
+>>>>>>> abdu
 
 const signup = async (req, res) => {
   try {
@@ -81,6 +85,7 @@ const signup = async (req, res) => {
     });
     await user.save();
 
+<<<<<<< HEAD
     // If operator and file exists, upload certificate to Cloudinary
     if (role === "operator" && req.file) {
       try {
@@ -97,6 +102,17 @@ const signup = async (req, res) => {
           success: false,
           message: "Failed to upload certificate. Registration cancelled.",
         });
+=======
+    if (req.body.referralCode) {
+      try {
+        await validateReferral({
+          newUserId: user._id,
+          email: user.email,
+          referralCode: req.body.referralCode,
+        });
+      } catch (refErr) {
+        console.warn("[referral] validate on signup:", refErr.message);
+>>>>>>> abdu
       }
     }
 
