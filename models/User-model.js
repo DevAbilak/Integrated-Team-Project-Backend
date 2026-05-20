@@ -34,6 +34,8 @@ const UserSchema = mongoose.Schema(
       businessName: { type: String, trim: true },
       licenseNumber: { type: String, trim: true },
       verified: { type: Boolean, default: false },
+      certificateId: { type: mongoose.Schema.Types.ObjectId, ref: "Media" },
+      certificateUrl: String,
     },
     createdAt: { type: Date, default: Date.now },
   },

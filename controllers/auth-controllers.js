@@ -15,6 +15,7 @@ const {
   RESET_PASSWORD_TEMPLATE,
   RESET_SUCCESSFUL_TEMPLATE,
 } = require("../utils/emailTemplates.js");
+const { uploadMedia } = require("../utils/media.service.js");
 
 const signup = async (req, res) => {
   try {
@@ -24,6 +25,26 @@ const signup = async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
+    }
+
+    let licenseNumber;
+    let businessName;
+    if (role === "operator") {
+      let { licenseNumber, businessName } = req.body;
+      console.log(licenseNumber, businessName);
+
+      if (!businessName || !licenseNumber) {
+        return res.status(400).json({
+          success: false,
+          message: "Business detail is required for operators",
+        });
+      }
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "Business certificate file is required for operators",
+        });
+      }
     }
 
     const userAlreadyExists = await User.findOne({ email });
@@ -46,8 +67,37 @@ const signup = async (req, res) => {
       verificationToken,
       verificationExpiresAt: Date.now() + 24 * 60 * 60 * 1000, //24 hours
       role,
+      operatorDetails:
+        role === "operator"
+          ? {
+              businessName,
+              licenseNumber: licenseNumber || "",
+              verified: false, // not verified until admin checks certificate
+              certificateId: null, // will be set after upload
+              certificateUrl: null,
+            }
+          : undefined,
     });
     user.save();
+
+    // If operator and file exists, upload certificate to Cloudinary
+    if (role === "operator" && req.file) {
+      try {
+        const mediaResult = await uploadMedia(req.file, user._id);
+        // Update operatorDetails with certificate reference
+        user.operatorDetails.certificateId = mediaResult.mediaId;
+        user.operatorDetails.certificateUrl = mediaResult.url;
+        await user.save();
+      } catch (uploadError) {
+        console.error("Certificate upload failed:", uploadError);
+        // Optional: delete the user because certificate is mandatory
+        await User.findByIdAndDelete(user._id);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to upload certificate. Registration cancelled.",
+        });
+      }
+    }
 
     // jwt
     generateTokenAndSetCookie(res, user._id);

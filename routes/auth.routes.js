@@ -11,6 +11,7 @@ const {
 } = require("../controllers/auth-controllers");
 
 const { verifyToken } = require("../middleware/verifyToken.js");
+const upload = require("../middleware/upload.js");
 
 const route = express.Router();
 
@@ -25,12 +26,12 @@ const route = express.Router();
  * @swagger
  * /api/auth/signup:
  *   post:
- *     summary: Register a new user (traveler or operator)
+ *     summary: Register a new user (traveler or operator) with optional certificate file for operators
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -40,25 +41,35 @@ const route = express.Router();
  *             properties:
  *               name:
  *                 type: string
+ *                 description: User's full name
  *                 example: "John Doe"
  *               email:
  *                 type: string
+ *                 format: email
+ *                 description: Unique email address
  *                 example: "john@example.com"
  *               password:
  *                 type: string
  *                 format: password
+ *                 description: Password (min 6 characters)
  *                 example: "secret123"
  *               role:
  *                 type: string
  *                 enum: [traveler, operator]
  *                 default: traveler
- *               operatorDetails:
- *                 type: object
- *                 properties:
- *                   businessName:
- *                     type: string
- *                   licenseNumber:
- *                     type: string
+ *                 description: User role. Operators must also provide businessName and certificate.
+ *               businessName:
+ *                 type: string
+ *                 description: Required if role is 'operator'
+ *                 example: "John's Ethiopia Tours"
+ *               licenseNumber:
+ *                 type: string
+ *                 description: Optional license number for operators
+ *                 example: "LIC-2024-00123"
+ *               certificate:
+ *                 type: string
+ *                 format: binary
+ *                 description: Business certificate file (image or PDF). Required if role is 'operator'.
  *     responses:
  *       201:
  *         description: Registration successful
@@ -69,19 +80,20 @@ const route = express.Router();
  *               properties:
  *                 success:
  *                   type: boolean
- *                 data:
- *                   type: object
- *                   properties:
- *                     user:
- *                       $ref: '#/components/schemas/User'
- *                     token:
- *                       type: string
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
  *       400:
- *         description: Validation error or email already exists
+ *         description: Validation error, missing required fields (e.g., certificate for operator), or email already exists
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error (e.g., certificate upload failure)
  */
 
 /**
@@ -391,7 +403,7 @@ route.get(
   },
 );
 
-route.post("/signup", signup);
+route.post("/signup", upload.single("certificate"), signup);
 route.post("/login", login);
 route.get("/logout", logout);
 
