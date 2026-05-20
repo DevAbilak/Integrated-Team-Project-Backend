@@ -78,7 +78,7 @@ const signup = async (req, res) => {
             }
           : undefined,
     });
-    user.save();
+    await user.save();
 
     // If operator and file exists, upload certificate to Cloudinary
     if (role === "operator" && req.file) {
