@@ -25,6 +25,7 @@ const loyaltyRoutes = require("./routes/loyalty.routes.js");
 const referralsRoutes = require("./routes/referrals.routes.js");
 const internalRoutes = require("./routes/internal.routes.js");
 const hotelRoutes = require("./routes/hotel.routes.js");
+const carRoutes = require('./routes/car.routes.js');
 const { handleStripeWebhook } = require("./controllers/payments.controller.js");
 
 const app = express();
@@ -85,6 +86,7 @@ app.use("/api/loyalty", loyaltyRoutes);
 app.use("/api/referrals", referralsRoutes);
 app.use("/internal", internalRoutes);
 app.use("/api/hotels", hotelRoutes);
+app.use("/api/cars", carRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

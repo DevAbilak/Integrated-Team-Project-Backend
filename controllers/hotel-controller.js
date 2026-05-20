@@ -8,7 +8,7 @@ const { deleteMediaFromCloudinary } = require("../utils/cloudinary");
 // Create a new hotel (operator only)
 const createHotel = async (req, res) => {
   try {
-    // 1. Extract text fields
+    // Extract text fields
     const {
       name,
       description,
@@ -28,7 +28,7 @@ const createHotel = async (req, res) => {
         .json({ success: false, message: "Missing required fields" });
     }
 
-    // 2. Handle multiple photo uploads
+    // Handle multiple photo uploads
     let photoUrls = [];
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
@@ -41,7 +41,7 @@ const createHotel = async (req, res) => {
       }
     }
 
-    // 3. Create hotel document
+    // Create hotel document
     const hotelData = {
       operatorId: req.userId,
       name,
