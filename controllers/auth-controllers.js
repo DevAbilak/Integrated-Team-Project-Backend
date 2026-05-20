@@ -27,11 +27,10 @@ const signup = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
-    let licenseNumber;
-    let businessName;
+    let licenseNumberRes;
+    let businessNameRes;
     if (role === "operator") {
-      let { licenseNumber, businessName } = req.body;
-      console.log(licenseNumber, businessName);
+      const { licenseNumber, businessName } = req.body;
 
       if (!businessName || !licenseNumber) {
         return res.status(400).json({
@@ -39,6 +38,8 @@ const signup = async (req, res) => {
           message: "Business detail is required for operators",
         });
       }
+      licenseNumberRes = licenseNumber;
+      businessNameRes = businessName;
       if (!req.file) {
         return res.status(400).json({
           success: false,
@@ -70,8 +71,8 @@ const signup = async (req, res) => {
       operatorDetails:
         role === "operator"
           ? {
-              businessName,
-              licenseNumber: licenseNumber || "",
+              businessName: businessNameRes,
+              licenseNumber: licenseNumberRes,
               verified: false, // not verified until admin checks certificate
               certificateId: null, // will be set after upload
               certificateUrl: null,
