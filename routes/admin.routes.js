@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getAllUsers,
   verifyOperator,
+  promoteUserToAdmin,
 } = require("../controllers/admin-controllers");
 const { verifyToken } = require("../middleware/verifyToken");
 const { isAdmin } = require("../middleware/isAdmin");
@@ -114,7 +115,56 @@ const router = express.Router();
  *         description: Not authenticated
  */
 
+/**
+ * @swagger
+ * /api/admin/promote-to-admin:
+ *   put:
+ *     summary: Promote a user to admin (admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: MongoDB ObjectId of the user to be promoted
+ *                 example: "60d5f9f8b8e5a72d4c8e4e3a"
+ *     responses:
+ *       200:
+ *         description: User promoted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   example: "User promoted to admin successfully by Admin John"
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Missing userId or user is already an admin
+ *       403:
+ *         description: Forbidden – only admins can access this endpoint
+ *       404:
+ *         description: User to promote not found
+ *       401:
+ *         description: Not authenticated
+ *       500:
+ *         description: Server error
+ */
+
 router.get("/users", verifyToken, isAdmin, getAllUsers);
 router.put("/users/:id/verify-operator", verifyToken, isAdmin, verifyOperator);
+router.put("/users/promote-to-admin", verifyToken, isAdmin, promoteUserToAdmin);
 
 module.exports = router;

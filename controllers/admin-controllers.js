@@ -73,4 +73,44 @@ const verifyOperator = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, verifyOperator };
+const promoteUserToAdmin = async (req,res) => {
+  try {
+    const {userId} = req.body;
+    const adminId = req.userId;
+
+    if(!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "user id to be promoted is required" });
+    }
+
+    const userToBePromoted = await User.findById(userId)
+    const adminPerformingPromotion = await User.findById(adminId)
+
+    if (!userToBePromoted) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    } 
+
+    if (userToBePromoted.role === 'admin') {
+      return res.status(400).json({ success: false, message: "User is already an admin" });
+    }
+      
+    userToBePromoted.role = "admin"
+    await userToBePromoted.save()
+
+    res.status(200).json({
+      success: true, 
+      message: `User promoted to admin successfully by ${adminPerformingPromotion.name}`, 
+      user: formatResponse(userToBePromoted)
+    })
+
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+module.exports = { getAllUsers, verifyOperator, promoteUserToAdmin };
