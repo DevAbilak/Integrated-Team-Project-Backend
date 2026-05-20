@@ -111,7 +111,7 @@ const promoteUserToAdmin = async (req, res) => {
     };
 
     await AdminLog.create({
-      adminId: requester._id, // the admin who performed the action
+      adminId: adminId, // the admin who performed the action
       action: "promote_to_admin", // consistent action name
       targetType: "user", // because we're acting on a user
       targetId: userToBePromoted._id, // the user who got promoted
